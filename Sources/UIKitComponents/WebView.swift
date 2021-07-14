@@ -11,6 +11,10 @@ import WebKit
 public struct WebView: View {
     let url: String
     
+    public init(url: String) {
+        self.url = url
+    }
+    
     public var body: some View {
         UIWebView(url: url)
     }
