@@ -10,18 +10,21 @@ import WebKit
 
 public struct WebView: View {
     let url: String
+    let preferredContentMode: WKWebpagePreferences.ContentMode
     
-    public init(url: String) {
+    public init(url: String, preferredContentMode: WKWebpagePreferences.ContentMode = .mobile) {
         self.url = url
+        self.preferredContentMode = preferredContentMode
     }
     
     public var body: some View {
-        UIWebView(url: url)
+        UIWebView(url: url, preferredContentMode: preferredContentMode)
     }
 }
 
 struct UIWebView: UIViewRepresentable {
     var url: String
+    let preferredContentMode: WKWebpagePreferences.ContentMode
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -33,6 +36,10 @@ struct UIWebView: UIViewRepresentable {
         
         let configuration = WKWebViewConfiguration()
         configuration.preferences = preferences
+        
+        let pref = WKWebpagePreferences.init()
+        pref.preferredContentMode = preferredContentMode
+        configuration.defaultWebpagePreferences = pref
         
         let webView = WKWebView(frame: CGRect.zero, configuration: configuration)
         webView.uiDelegate = context.coordinator
