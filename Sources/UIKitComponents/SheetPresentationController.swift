@@ -80,7 +80,7 @@ private class CustomSheetHostingViewController<Content: View>: UIHostingControll
                 presentationController.detents = [.medium(), .large()]
                 presentationController.prefersGrabberVisible = true
                 presentationController.prefersScrollingExpandsWhenScrolledToEdge = false
-                //            presentationController.smallestUndimmedDetentIdentifier = .medium
+                presentationController.largestUndimmedDetentIdentifier = .medium
                 presentationController.preferredCornerRadius = 20
             }
         }
