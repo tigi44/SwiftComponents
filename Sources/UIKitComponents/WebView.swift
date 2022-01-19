@@ -72,6 +72,12 @@ struct UIWebView: UIViewRepresentable {
             
             decisionHandler(.allow)
         }
+        
+        func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+            webView.load(navigationAction.request)
+            
+            return nil
+        }
     }
 }
 
