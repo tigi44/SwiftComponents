@@ -4,12 +4,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "SwiftUIComponents",
+    name: "SwiftComponents",
     platforms: [.iOS(.v15)],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
-            name: "SwiftUIComponents",
+            name: "SwiftComponents",
             targets: ["SwiftUIComponents", "FoundationComponents"]),
     ],
     dependencies: [
@@ -28,8 +28,12 @@ let package = Package(
         .target(
             name: "UIKitComponents",
             dependencies: []),
+        
         .testTarget(
             name: "SwiftUIComponentsTests",
             dependencies: ["SwiftUIComponents"]),
+        .testTarget(
+            name: "FoundationComponentsTests",
+            dependencies: ["FoundationComponents"]),
     ]
 )
