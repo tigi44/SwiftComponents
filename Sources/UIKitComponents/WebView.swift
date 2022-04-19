@@ -23,9 +23,9 @@ public struct WebView: View {
     }
     
     public var body: some View {
-        UIWebView(url: url,
-                  preferredContentMode: preferredContentMode,
-                  webViewObject: ObserableWebView())
+        WebKitWebView(url: url,
+                      preferredContentMode: preferredContentMode,
+                      webViewObject: ObserableWebView())
     }
 }
 
@@ -81,9 +81,9 @@ public struct NaviWebView: View {
             .padding()
             .background(.regularMaterial)
             
-            UIWebView(url: url,
-                      preferredContentMode: preferredContentMode,
-                      webViewObject: webViewObject)
+            WebKitWebView(url: url,
+                          preferredContentMode: preferredContentMode,
+                          webViewObject: webViewObject)
         }
     }
 }
@@ -108,7 +108,7 @@ class ObserableWebView: ObservableObject {
     @Published var webView: WKWebView?
 }
 
-struct UIWebView: UIViewRepresentable {
+struct WebKitWebView: UIViewRepresentable {
     var url: String
     let preferredContentMode: WKWebpagePreferences.ContentMode
     @ObservedObject var webViewObject: ObserableWebView
@@ -147,9 +147,9 @@ struct UIWebView: UIViewRepresentable {
     
     class Coordinator : NSObject, WKNavigationDelegate, WKUIDelegate {
         
-        var parent: UIWebView
+        var parent: WebKitWebView
            
-        init(_ parent: UIWebView) {
+        init(_ parent: WebKitWebView) {
             self.parent = parent
         }
         
