@@ -15,12 +15,14 @@ public struct SheetPresentationController<SheetView: View>: UIViewControllerRepr
     
     @Binding var isPresented: Bool
     var sheetView: SheetView
+    var largestUndimmedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = .none
     var onDismiss: DefaultClosureType?
     
-    public init(isPresented: Binding<Bool>, sheetView: SheetView, onDismiss: DefaultClosureType?) {
-        self._isPresented = isPresented
-        self.sheetView = sheetView
-        self.onDismiss = onDismiss
+    public init(isPresented: Binding<Bool>, sheetView: SheetView, largestUndimmedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = .none, onDismiss: DefaultClosureType?) {
+        self._isPresented                       = isPresented
+        self.sheetView                          = sheetView
+        self.largestUndimmedDetentIdentifier    = largestUndimmedDetentIdentifier
+        self.onDismiss                          = onDismiss
     }
     
     public func makeCoordinator() -> Coordinator {
@@ -40,6 +42,7 @@ public struct SheetPresentationController<SheetView: View>: UIViewControllerRepr
             
             let sheetViewController = CustomSheetHostingViewController(rootView: sheetView)
             
+            sheetViewController.largestUndimmedDetentIdentifier  = self.largestUndimmedDetentIdentifier
             sheetViewController.presentationController?.delegate = context.coordinator
             
             uiViewController.present(sheetViewController, animated: true)
@@ -70,6 +73,16 @@ public struct SheetPresentationController<SheetView: View>: UIViewControllerRepr
 
 private class CustomSheetHostingViewController<Content: View>: UIHostingController<Content> {
     
+    var largestUndimmedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = .none {
+        didSet {
+            if #available(iOS 15.0, *) {
+                if let presentationController = self.presentationController as? UISheetPresentationController {
+                    presentationController.largestUndimmedDetentIdentifier = self.largestUndimmedDetentIdentifier
+                }
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         
         view.backgroundColor = .clear
@@ -77,11 +90,11 @@ private class CustomSheetHostingViewController<Content: View>: UIHostingControll
         if #available(iOS 15.0, *) {
             if let presentationController = self.presentationController as? UISheetPresentationController {
                 
-                presentationController.detents = [.medium(), .large()]
-                presentationController.prefersGrabberVisible = true
-                presentationController.prefersScrollingExpandsWhenScrolledToEdge = false
-                presentationController.largestUndimmedDetentIdentifier = .medium
-                presentationController.preferredCornerRadius = 20
+                presentationController.detents                                      = [.medium(), .large()]
+                presentationController.prefersGrabberVisible                        = true
+                presentationController.prefersScrollingExpandsWhenScrolledToEdge    = false
+                presentationController.largestUndimmedDetentIdentifier              = self.largestUndimmedDetentIdentifier
+                presentationController.preferredCornerRadius                        = 20
             }
         }
     }
@@ -101,6 +114,7 @@ struct SheetPresentationController_Previews: PreviewProvider {
                 .navigationTitle("Half Sheet")
                 .background(SheetPresentationController(isPresented: $showSheet,
                                                         sheetView: Color.red.ignoresSafeArea(),
+                                                        largestUndimmedDetentIdentifier: .medium,
                                                         onDismiss: nil))
             }
         }
