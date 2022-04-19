@@ -88,20 +88,25 @@ private class CustomSheetHostingViewController<Content: View>: UIHostingControll
 }
 
 struct SheetPresentationController_Previews: PreviewProvider {
-    
-    @State static var showSheet: Bool = false
+    struct Preview_ContainerView: View {
+        @State var showSheet: Bool = false
+        
+        var body: some View {
+            NavigationView {
+                Button {
+                    showSheet.toggle()
+                } label: {
+                    Text("show a half sheet")
+                }
+                .navigationTitle("Half Sheet")
+                .background(SheetPresentationController(isPresented: $showSheet,
+                                                        sheetView: Color.red.ignoresSafeArea(),
+                                                        onDismiss: nil))
+            }
+        }
+    }
     
     static var previews: some View {
-        
-        NavigationView {
-            
-            Button {
-                showSheet.toggle()
-            } label: {
-                Text("show a half sheet")
-            }
-            .navigationTitle("Half Sheet")
-            .background(SheetPresentationController(isPresented: $showSheet, sheetView: Color.red, onDismiss: nil))
-        }
+        Preview_ContainerView()
     }
 }
