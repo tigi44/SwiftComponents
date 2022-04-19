@@ -23,3 +23,14 @@ public struct SFSafariViewWrapper: UIViewControllerRepresentable {
         return
     }
 }
+
+
+// MARK: - preview
+
+
+struct SFSafariViewWrapper_Previews: PreviewProvider {
+    static var previews: some View {
+        SFSafariViewWrapper(url: URL(string: "https://www.apple.com")!)
+            .edgesIgnoringSafeArea(.all)
+    }
+}
