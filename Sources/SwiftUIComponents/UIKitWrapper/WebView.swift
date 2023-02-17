@@ -69,7 +69,6 @@ public struct NaviWebView: View {
                 
                 Button {
                     if let url = webViewObject.webView?.url {
-                        print(url)
                         UIApplication.shared.open(url,
                                                   options: [:],
                                                   completionHandler: nil)
@@ -95,8 +94,10 @@ public struct NaviWebView: View {
 struct WebView_Previews: PreviewProvider {
     static var previews: some View {
         WebView(url: "https://www.apple.com")
+            .previewDisplayName("WebView")
         
         NaviWebView(url: "https://www.apple.com")
+            .previewDisplayName("NaviWebView")
     }
 }
 

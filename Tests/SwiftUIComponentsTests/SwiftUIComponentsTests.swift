@@ -17,6 +17,4 @@ final class SwiftUIComponentsTests: XCTestCase {
         
         wait(for: [expectation], timeout: 10)
     }
-    
-    
 }

@@ -75,27 +75,21 @@ private class CustomSheetHostingViewController<Content: View>: UIHostingControll
     
     var largestUndimmedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = .none {
         didSet {
-            if #available(iOS 15.0, *) {
-                if let presentationController = self.presentationController as? UISheetPresentationController {
-                    presentationController.largestUndimmedDetentIdentifier = self.largestUndimmedDetentIdentifier
-                }
+            if let presentationController = self.presentationController as? UISheetPresentationController {
+                presentationController.largestUndimmedDetentIdentifier = self.largestUndimmedDetentIdentifier
             }
         }
     }
     
     override func viewDidLoad() {
-        
         view.backgroundColor = .clear
         
-        if #available(iOS 15.0, *) {
-            if let presentationController = self.presentationController as? UISheetPresentationController {
-                
-                presentationController.detents                                      = [.medium(), .large()]
-                presentationController.prefersGrabberVisible                        = true
-                presentationController.prefersScrollingExpandsWhenScrolledToEdge    = false
-                presentationController.largestUndimmedDetentIdentifier              = self.largestUndimmedDetentIdentifier
-                presentationController.preferredCornerRadius                        = 20
-            }
+        if let presentationController = self.presentationController as? UISheetPresentationController {
+            presentationController.detents                                      = [.medium(), .large()]
+            presentationController.prefersGrabberVisible                        = true
+            presentationController.prefersScrollingExpandsWhenScrolledToEdge    = false
+            presentationController.largestUndimmedDetentIdentifier              = self.largestUndimmedDetentIdentifier
+            presentationController.preferredCornerRadius                        = 20
         }
     }
 }

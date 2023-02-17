@@ -6,38 +6,31 @@
 //
 
 import SwiftUI
-import UIKitComponents
 
 public extension View {
     @ViewBuilder func hidden(_ shouldHide: Bool) -> some View {
         if shouldHide { hidden() }
         else { self }
     }
-}
-
-public extension View {
+    
     func gradientForeground(colors: [Color], startPoint: UnitPoint = .topLeading, endPoint: UnitPoint = .bottomTrailing) -> some View {
         self.overlay(LinearGradient(gradient: .init(colors: colors),
                                     startPoint: startPoint,
                                     endPoint: endPoint))
             .mask(self)
     }
-}
-
-public extension View {
+    
     func onLoad(perform action: (() -> Void)? = nil) -> some View {
         modifier(ViewDidLoadModifier(perform: action))
     }
-}
-
-public extension View {
-    @available(iOS 15, *)
+    
     func sheetPresentation<SheetView: View>(isPresented: Binding<Bool>, @ViewBuilder sheetView: @escaping () -> SheetView, onDismiss: SheetPresentationController<SheetView>.DefaultClosureType? = nil) -> some View {
         self.background(
             SheetPresentationController(isPresented: isPresented, sheetView: sheetView(), onDismiss: onDismiss)
         )
     }
 }
+
 
 public extension Alert {
     init(errorMessage: String?) {
@@ -51,6 +44,10 @@ public extension Alert {
         self = Alert(title: Text("Error"), message: Text(message), dismissButton: nil)
     }
 }
+
+
+// MARK: - Identifiable
+
 
 extension Alert: Identifiable {
     public var id: String {
