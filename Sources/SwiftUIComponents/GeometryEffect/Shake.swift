@@ -13,10 +13,17 @@ public struct Shake: GeometryEffect {
         case X, Y
     }
     
-    public var axis             : Axis    = .X
-    public var amount           : CGFloat = 10
-    public var shakesPerUnit    : CGFloat = 4
+    public var axis             : Axis
+    public var amount           : CGFloat
+    public var shakesPerUnit    : CGFloat
     public var animatableData   : CGFloat
+    
+    public init(axis: Axis = Axis.X, amount: CGFloat = 10, shakesPerUnit: CGFloat = 4, animatableData: CGFloat) {
+        self.axis = axis
+        self.amount = amount
+        self.shakesPerUnit = shakesPerUnit
+        self.animatableData = animatableData
+    }
     
     public func effectValue(size: CGSize) -> ProjectionTransform {
         switch axis {
