@@ -10,10 +10,13 @@ jobs:
   build:
 
     runs-on: macos-latest
+    strategy:
+        matrix:
+          destination: ['platform=iOS Simulator,OS=18.1,name=iPhone 16 Pro']
 
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: swift build -Xswiftc "-sdk" -Xswiftc "`xcrun --sdk iphonesimulator --show-sdk-path`" -Xswiftc "-target" -Xswiftc "x86_64-apple-ios16.2-simulator"
+      run: xcodebuild build-for-testing -scheme "SwiftComponents-Package" -destination "${{ matrix.destination }}"
     - name: Run tests
-      run: xcodebuild test -destination 'platform=iOS Simulator,OS=16.2,name=iPhone 14 Pro' -scheme 'SwiftComponents-Package'
+      run: xcodebuild test -scheme "SwiftComponents-Package" -destination "${{ matrix.destination }}"
