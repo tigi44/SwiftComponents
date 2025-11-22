@@ -10,13 +10,28 @@ jobs:
   build:
 
     runs-on: macos-latest
-    strategy:
-        matrix:
-          destination: ['platform=iOS Simulator,OS=18.1,name=iPhone 16 Pro']
-
+    
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+
+    # 최신 시뮬레이터 UUID 가져오기 (최신 기기 + 최신 OS)
+    - name: Get latest iOS simulator UUID
+      id: simulator
+      run: |
+        DEVICE_UUID=$(xcrun simctl list devices available |
+          grep -E 'iPhone|iPad' |           # iPhone 또는 iPad 시뮬레이터만
+          grep -v "unavailable" |          # 사용 불가 시뮬레이터 제외
+          sort -t, -k2 -r |                 # OS 버전 기준 내림차순 정렬
+          head -1 |                         # 최신 모델 + 최신 OS 선택
+          awk -F '[()]' '{print $2}')       # UUID 추출
+        echo "DEVICE_UUID=$DEVICE_UUID" >> $GITHUB_ENV
+
     - name: Build
-      run: xcodebuild build-for-testing -scheme "SwiftComponents-Package" -destination "${{ matrix.destination }}"
+      run: xcodebuild build-for-testing \
+            -scheme "SwiftComponents-Package" \
+            -destination "id=$DEVICE_UUID"
+
     - name: Run tests
-      run: xcodebuild test -scheme "SwiftComponents-Package" -destination "${{ matrix.destination }}"
+      run: xcodebuild test \
+            -scheme "SwiftComponents-Package" \
+            -destination "id=$DEVICE_UUID"
