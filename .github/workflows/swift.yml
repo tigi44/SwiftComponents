@@ -17,17 +17,15 @@ jobs:
     - name: Get latest iOS simulator destination
       id: simulator
       run: |
-        # 사용 가능한 시뮬레이터 목록에서 최신 모델+OS 선택
         LINE=$(xcrun simctl list devices available |
           grep -E 'iPhone|iPad' |
           grep -v "unavailable" |
           sort -t, -k2 -r |
           head -1)
-        
-        # 예시 LINE: "iPhone 16 Pro (18.1) [UUID]"
-        DEVICE_NAME=$(echo "$LINE" | awk -F ' \(' '{print $1}')
-        OS_VERSION=$(echo "$LINE" | awk -F '[()]' '{print $2}')
-
+    
+        DEVICE_NAME=$(echo "$LINE" | sed -E 's/ \([0-9.]+\).*//')
+        OS_VERSION=$(echo "$LINE" | sed -E 's/.*\(([0-9.]+)\).*/\1/')
+    
         DEST="platform=iOS Simulator,OS=$OS_VERSION,name=$DEVICE_NAME"
         echo "DESTINATION=$DEST" >> $GITHUB_ENV
         echo "Selected destination: $DEST"
