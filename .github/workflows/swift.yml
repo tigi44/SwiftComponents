@@ -14,24 +14,26 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # 최신 시뮬레이터 UUID 가져오기 (최신 기기 + 최신 OS)
-    - name: Get latest iOS simulator UUID
+    - name: Get latest iOS simulator destination
       id: simulator
       run: |
-        DEVICE_UUID=$(xcrun simctl list devices available |
-          grep -E 'iPhone|iPad' |           # iPhone 또는 iPad 시뮬레이터만
-          grep -v "unavailable" |          # 사용 불가 시뮬레이터 제외
-          sort -t, -k2 -r |                 # OS 버전 기준 내림차순 정렬
-          head -1 |                         # 최신 모델 + 최신 OS 선택
-          awk -F '[()]' '{print $2}')       # UUID 추출
-        echo "DEVICE_UUID=$DEVICE_UUID" >> $GITHUB_ENV
+        # 사용 가능한 시뮬레이터 목록에서 최신 모델+OS 선택
+        LINE=$(xcrun simctl list devices available |
+          grep -E 'iPhone|iPad' |
+          grep -v "unavailable" |
+          sort -t, -k2 -r |
+          head -1)
+        
+        # 예시 LINE: "iPhone 16 Pro (18.1) [UUID]"
+        DEVICE_NAME=$(echo "$LINE" | awk -F ' \(' '{print $1}')
+        OS_VERSION=$(echo "$LINE" | awk -F '[()]' '{print $2}')
+
+        DEST="platform=iOS Simulator,OS=$OS_VERSION,name=$DEVICE_NAME"
+        echo "DESTINATION=$DEST" >> $GITHUB_ENV
+        echo "Selected destination: $DEST"
 
     - name: Build
-      run: xcodebuild build-for-testing \
-            -scheme "SwiftComponents-Package" \
-            -destination "id=$DEVICE_UUID"
+      run: xcodebuild build-for-testing -scheme "SwiftComponents-Package" -destination "$DESTINATION"
 
     - name: Run tests
-      run: xcodebuild test \
-            -scheme "SwiftComponents-Package" \
-            -destination "id=$DEVICE_UUID"
+      run: xcodebuild test -scheme "SwiftComponents-Package" -destination "$DESTINATION"
