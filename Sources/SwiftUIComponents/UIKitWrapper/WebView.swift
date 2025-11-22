@@ -88,6 +88,74 @@ public struct NaviWebView: View {
 }
 
 
+// MARK: - NaviPopupWebView - with web navigation header
+
+
+public struct NaviPopupWebView: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    let url: String
+    let preferredContentMode: WKWebpagePreferences.ContentMode
+    
+    @State private var canGoBack: Bool = false
+    @State private var canGoForward: Bool = false
+    @StateObject private var webViewObject: ObserableWebView = ObserableWebView()
+    
+    public init(url: String, preferredContentMode: WKWebpagePreferences.ContentMode = .mobile) {
+        self.url = url
+        self.preferredContentMode = preferredContentMode
+    }
+    
+    public var body: some View {
+        NavigationView {
+            WebKitWebView(url: url,
+                          preferredContentMode: preferredContentMode,
+                          webViewObject: webViewObject)
+            .toolbar {
+                ToolbarItemGroup(placement: .topBarLeading) {
+                    HStack(spacing: 10) {
+                        Button(action: {
+                            dismiss()
+                        }, label: {
+                            Image(systemName: "xmark")
+                        })
+                        
+                        Divider()
+                    }
+                    
+                    Button {
+                        webViewObject.webView?.goBack()
+                    } label: {
+                        Image(systemName: "chevron.backward")
+                    }
+                    .disabled(!(webViewObject.webView?.canGoBack ?? false))
+                    
+                    Button {
+                        webViewObject.webView?.goForward()
+                    } label: {
+                        Image(systemName: "chevron.forward")
+                    }
+                    .disabled(!(webViewObject.webView?.canGoForward ?? false))
+                }
+                
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button(action: {
+                        if let url = webViewObject.webView?.url {
+                            UIApplication.shared.open(url,
+                                                      options: [:],
+                                                      completionHandler: nil)
+                        }
+                    }, label: {
+                        Image(systemName: "safari")
+                    })
+                }
+            }
+        }
+        .navigationViewStyle(.stack)
+    }
+}
+
+
 // MARK: - preview
 
 
@@ -98,6 +166,9 @@ struct WebView_Previews: PreviewProvider {
         
         NaviWebView(url: "https://www.apple.com")
             .previewDisplayName("NaviWebView")
+        
+        NaviPopupWebView(url: "https://www.apple.com")
+            .previewDisplayName("NaviPopupWebView")
     }
 }
 
