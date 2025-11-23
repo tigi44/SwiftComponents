@@ -88,10 +88,10 @@ public struct NaviWebView: View {
 }
 
 
-// MARK: - NaviPopupWebView - with web navigation header
+// MARK: - NaviSheetWebView - with web navigation header
 
 
-public struct NaviPopupWebView: View {
+public struct NaviSheetWebView: View {
     @Environment(\.dismiss) private var dismiss
     
     let url: String
@@ -112,30 +112,58 @@ public struct NaviPopupWebView: View {
                           preferredContentMode: preferredContentMode,
                           webViewObject: webViewObject)
             .toolbar {
-                ToolbarItemGroup(placement: .topBarLeading) {
-                    HStack(spacing: 10) {
+                if #available(iOS 26.0, *) {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button(action: {
+                            dismiss()
+                        }, label: {
+                            Image(systemName: "xmark")
+                        })
+                    }
+                    
+                    ToolbarSpacer(.fixed, placement: .topBarLeading)
+                    
+                    if webViewObject.webView?.canGoBack ?? false {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button {
+                                webViewObject.webView?.goBack()
+                            } label: {
+                                Image(systemName: "chevron.backward")
+                            }
+                        }
+                    }
+                    
+                    if webViewObject.webView?.canGoForward ?? false {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button {
+                                webViewObject.webView?.goForward()
+                            } label: {
+                                Image(systemName: "chevron.forward")
+                            }
+                        }
+                    }
+                } else {
+                    ToolbarItemGroup(placement: .topBarLeading) {
                         Button(action: {
                             dismiss()
                         }, label: {
                             Image(systemName: "xmark")
                         })
                         
-                        Divider()
+                        Button {
+                            webViewObject.webView?.goBack()
+                        } label: {
+                            Image(systemName: "chevron.backward")
+                        }
+                        .disabled(!(webViewObject.webView?.canGoBack ?? false))
+                        
+                        Button {
+                            webViewObject.webView?.goForward()
+                        } label: {
+                            Image(systemName: "chevron.forward")
+                        }
+                        .disabled(!(webViewObject.webView?.canGoForward ?? false))
                     }
-                    
-                    Button {
-                        webViewObject.webView?.goBack()
-                    } label: {
-                        Image(systemName: "chevron.backward")
-                    }
-                    .disabled(!(webViewObject.webView?.canGoBack ?? false))
-                    
-                    Button {
-                        webViewObject.webView?.goForward()
-                    } label: {
-                        Image(systemName: "chevron.forward")
-                    }
-                    .disabled(!(webViewObject.webView?.canGoForward ?? false))
                 }
                 
                 ToolbarItemGroup(placement: .topBarTrailing) {
@@ -167,7 +195,7 @@ struct WebView_Previews: PreviewProvider {
         NaviWebView(url: "https://www.apple.com")
             .previewDisplayName("NaviWebView")
         
-        NaviPopupWebView(url: "https://www.apple.com")
+        NaviSheetWebView(url: "https://www.apple.com")
             .previewDisplayName("NaviPopupWebView")
     }
 }
