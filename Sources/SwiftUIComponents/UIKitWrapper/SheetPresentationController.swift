@@ -16,10 +16,10 @@ public struct SheetPresentationController<SheetView: View>: UIViewControllerRepr
     @Binding var isPresented: Bool
     var sheetView: SheetView
     var largestUndimmedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = .none
-    var selectedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = .medium
+    var selectedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = .none
     var onDismiss: DefaultClosureType?
     
-    public init(isPresented: Binding<Bool>, sheetView: SheetView, largestUndimmedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = .none, selectedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = .medium, onDismiss: DefaultClosureType?) {
+    public init(isPresented: Binding<Bool>, sheetView: SheetView, largestUndimmedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = .none, selectedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = .none, onDismiss: DefaultClosureType?) {
         self._isPresented                       = isPresented
         self.sheetView                          = sheetView
         self.largestUndimmedDetentIdentifier    = largestUndimmedDetentIdentifier
@@ -121,7 +121,7 @@ struct SheetPresentationController_Previews: PreviewProvider {
                 .background(SheetPresentationController(isPresented: $showSheet,
                                                         sheetView: Color.red.ignoresSafeArea(),
                                                         largestUndimmedDetentIdentifier: .medium,
-                                                        selectedDetentIdentifier: .medium,
+                                                        selectedDetentIdentifier: .large,
                                                         onDismiss: nil))
             }
         }

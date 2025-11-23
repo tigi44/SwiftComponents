@@ -24,9 +24,9 @@ public extension View {
         modifier(ViewDidLoadModifier(perform: action))
     }
     
-    func sheetPresentation<SheetView: View>(isPresented: Binding<Bool>, @ViewBuilder sheetView: @escaping () -> SheetView, largestUndimmedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = nil, onDismiss: SheetPresentationController<SheetView>.DefaultClosureType? = nil) -> some View {
+    func sheetPresentation<SheetView: View>(isPresented: Binding<Bool>, @ViewBuilder sheetView: @escaping () -> SheetView, largestUndimmedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = nil, selectedDetentIdentifier: UISheetPresentationController.Detent.Identifier? = nil, onDismiss: SheetPresentationController<SheetView>.DefaultClosureType? = nil) -> some View {
         self.background(
-            SheetPresentationController(isPresented: isPresented, sheetView: sheetView(), largestUndimmedDetentIdentifier: largestUndimmedDetentIdentifier, onDismiss: onDismiss)
+            SheetPresentationController(isPresented: isPresented, sheetView: sheetView(), largestUndimmedDetentIdentifier: largestUndimmedDetentIdentifier, selectedDetentIdentifier: selectedDetentIdentifier, onDismiss: onDismiss)
         )
     }
 }
