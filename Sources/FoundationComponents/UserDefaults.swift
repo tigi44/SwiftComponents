@@ -11,13 +11,16 @@ import Foundation
 public struct UserDefault<T> {
     let key: String
     let defaultValue: T
+    let userDefaults: UserDefaults
+
+    public init(key: String, defaultValue: T, userDefaults: UserDefaults = .standard) {
+        self.key = key
+        self.defaultValue = defaultValue
+        self.userDefaults = userDefaults
+    }
 
     public var wrappedValue: T {
-        get {
-            UserDefaults.standard.object(forKey: key) as? T ?? defaultValue
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: key)
-        }
+        get { userDefaults.object(forKey: key) as? T ?? defaultValue }
+        set { userDefaults.set(newValue, forKey: key) }
     }
 }
