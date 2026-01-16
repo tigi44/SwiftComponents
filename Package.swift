@@ -12,6 +12,9 @@ let package = Package(
             name: "SwiftUIComponents",
             targets: ["SwiftUIComponents"]),
         .library(
+            name: "UIComponents",
+            targets: ["UIComponents"]),
+        .library(
             name: "FoundationComponents",
             targets: ["FoundationComponents"]),
     ],
@@ -24,6 +27,9 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "SwiftUIComponents",
+            dependencies: ["UIComponents"]),
+        .target(
+            name: "UIComponents",
             dependencies: []),
         .target(
             name: "FoundationComponents",
@@ -32,6 +38,9 @@ let package = Package(
         .testTarget(
             name: "SwiftUIComponentsTests",
             dependencies: ["SwiftUIComponents"]),
+        .testTarget(
+            name: "UIComponentsTests",
+            dependencies: ["UIComponents"]),
         .testTarget(
             name: "FoundationComponentsTests",
             dependencies: ["FoundationComponents"]),
