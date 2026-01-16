@@ -16,24 +16,37 @@ import UIComponents
 public struct WebView: View {
     let url: String
     let preferredContentMode: WKWebpagePreferences.ContentMode
+    let javaScriptCanOpenWindowsAutomatically: Bool
     let isInspectable: Bool
     
-    public init(url: String, preferredContentMode: WKWebpagePreferences.ContentMode = .mobile) {
+    public init(
+        url: String,
+        preferredContentMode: WKWebpagePreferences.ContentMode = .mobile,
+        javaScriptCanOpenWindowsAutomatically: Bool = false
+    ) {
         self.url = url
         self.preferredContentMode = preferredContentMode
+        self.javaScriptCanOpenWindowsAutomatically = javaScriptCanOpenWindowsAutomatically
         self.isInspectable = false
     }
     
     @available(iOS 16.4, *)
-    public init(url: String, preferredContentMode: WKWebpagePreferences.ContentMode = .mobile, isInspectable: Bool = false) {
+    public init(
+        url: String,
+        preferredContentMode: WKWebpagePreferences.ContentMode = .mobile,
+        javaScriptCanOpenWindowsAutomatically: Bool = false,
+        isInspectable: Bool = false
+    ) {
         self.url = url
         self.preferredContentMode = preferredContentMode
+        self.javaScriptCanOpenWindowsAutomatically = javaScriptCanOpenWindowsAutomatically
         self.isInspectable = isInspectable
     }
     
     public var body: some View {
         WebKitWebView(url: url,
                       preferredContentMode: preferredContentMode,
+                      javaScriptCanOpenWindowsAutomatically: javaScriptCanOpenWindowsAutomatically,
                       isInspectable: isInspectable,
                       webViewObject: ObserableWebView())
     }
@@ -46,22 +59,34 @@ public struct WebView: View {
 public struct NaviWebView: View {
     let url: String
     let preferredContentMode: WKWebpagePreferences.ContentMode
+    let javaScriptCanOpenWindowsAutomatically: Bool
     let isInspectable: Bool
     
     @State private var canGoBack: Bool = false
     @State private var canGoForward: Bool = false
     @StateObject private var webViewObject: ObserableWebView = ObserableWebView()
     
-    public init(url: String, preferredContentMode: WKWebpagePreferences.ContentMode = .mobile) {
+    public init(
+        url: String,
+        preferredContentMode: WKWebpagePreferences.ContentMode = .mobile,
+        javaScriptCanOpenWindowsAutomatically: Bool = false
+    ) {
         self.url = url
         self.preferredContentMode = preferredContentMode
+        self.javaScriptCanOpenWindowsAutomatically = javaScriptCanOpenWindowsAutomatically
         self.isInspectable = false
     }
     
     @available(iOS 16.4, *)
-    public init(url: String, preferredContentMode: WKWebpagePreferences.ContentMode = .mobile, isInspectable: Bool = false) {
+    public init(
+        url: String,
+        preferredContentMode: WKWebpagePreferences.ContentMode = .mobile,
+        javaScriptCanOpenWindowsAutomatically: Bool = false,
+        isInspectable: Bool = false
+    ) {
         self.url = url
         self.preferredContentMode = preferredContentMode
+        self.javaScriptCanOpenWindowsAutomatically = javaScriptCanOpenWindowsAutomatically
         self.isInspectable = isInspectable
     }
     
@@ -101,6 +126,7 @@ public struct NaviWebView: View {
             
             WebKitWebView(url: url,
                           preferredContentMode: preferredContentMode,
+                          javaScriptCanOpenWindowsAutomatically: javaScriptCanOpenWindowsAutomatically,
                           isInspectable: isInspectable,
                           webViewObject: webViewObject)
         }
@@ -116,22 +142,34 @@ public struct NaviSheetWebView: View {
     
     let url: String
     let preferredContentMode: WKWebpagePreferences.ContentMode
+    let javaScriptCanOpenWindowsAutomatically: Bool
     let isInspectable: Bool
     
     @State private var canGoBack: Bool = false
     @State private var canGoForward: Bool = false
     @StateObject private var webViewObject: ObserableWebView = ObserableWebView()
     
-    public init(url: String, preferredContentMode: WKWebpagePreferences.ContentMode = .mobile) {
+    public init(
+        url: String,
+        preferredContentMode: WKWebpagePreferences.ContentMode = .mobile,
+        javaScriptCanOpenWindowsAutomatically: Bool = false
+    ) {
         self.url = url
         self.preferredContentMode = preferredContentMode
+        self.javaScriptCanOpenWindowsAutomatically = javaScriptCanOpenWindowsAutomatically
         self.isInspectable = false
     }
     
     @available(iOS 16.4, *)
-    public init(url: String, preferredContentMode: WKWebpagePreferences.ContentMode = .mobile, isInspectable: Bool = false) {
+    public init(
+        url: String,
+        preferredContentMode: WKWebpagePreferences.ContentMode = .mobile,
+        javaScriptCanOpenWindowsAutomatically: Bool = false,
+        isInspectable: Bool = false
+    ) {
         self.url = url
         self.preferredContentMode = preferredContentMode
+        self.javaScriptCanOpenWindowsAutomatically = javaScriptCanOpenWindowsAutomatically
         self.isInspectable = isInspectable
     }
     
@@ -139,6 +177,7 @@ public struct NaviSheetWebView: View {
         NavigationView {
             WebKitWebView(url: url,
                           preferredContentMode: preferredContentMode,
+                          javaScriptCanOpenWindowsAutomatically: javaScriptCanOpenWindowsAutomatically,
                           isInspectable: isInspectable,
                           webViewObject: webViewObject)
             .toolbar {
@@ -233,26 +272,6 @@ struct WebView_Previews: PreviewProvider {
 
 // MARK: - UIWebView : UIViewRepresentable
 
-private let windowOpenOverrideJS = """
-(function() {
-  if (window.__popupIntercepted__) { return; }
-  window.__popupIntercepted__ = true;
-
-  const originalOpen = window.open;
-  window.open = function(url, name, specs) {
-    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.windowOpen) {
-      window.webkit.messageHandlers.windowOpen.postMessage({
-        url: url,
-        name: name || null,
-        specs: specs || null
-      });
-      return null;
-    }
-    return originalOpen.apply(window, arguments);
-  };
-})();
-"""
-
 class ObserableWebView: ObservableObject {
     @Published var webView: WKWebView?
 }
@@ -260,16 +279,21 @@ class ObserableWebView: ObservableObject {
 struct WebKitWebView: UIViewRepresentable {
     let url: String
     let preferredContentMode: WKWebpagePreferences.ContentMode
+    let javaScriptCanOpenWindowsAutomatically: Bool
     let isInspectable: Bool
     @ObservedObject var webViewObject: ObserableWebView
     
+    private let scripts: [WebViewScript] = [
+        WindowOpenScript()
+    ]
+    
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator(self, scripts: scripts)
     }
     
     func makeUIView(context: Context) -> WKWebView {
         let preferences = WKPreferences()
-        preferences.javaScriptCanOpenWindowsAutomatically = false
+        preferences.javaScriptCanOpenWindowsAutomatically = javaScriptCanOpenWindowsAutomatically
         
         let configuration = WKWebViewConfiguration()
         configuration.preferences = preferences
@@ -279,17 +303,15 @@ struct WebKitWebView: UIViewRepresentable {
         configuration.defaultWebpagePreferences = pref
         
         let contentController = WKUserContentController()
-        let script = WKUserScript(
-            source: windowOpenOverrideJS,
-            injectionTime: .atDocumentStart,
-            forMainFrameOnly: false
-        )
         
-        contentController.addUserScript(script)
-        contentController.add(context.coordinator, name: "windowOpen")
-
+        scripts.forEach { script in
+            contentController.addUserScript(script.userScript)
+            script.messageHandlerNames.forEach {
+                contentController.add(context.coordinator, name: $0)
+            }
+        }
+        
         configuration.userContentController = contentController
-        configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
         
         let webView = WKWebView(frame: CGRect.zero, configuration: configuration)
         webView.uiDelegate = context.coordinator
@@ -326,10 +348,12 @@ struct WebKitWebView: UIViewRepresentable {
         }
         
         private var pendingDialog: JSDialog?
-        private var parent: WebKitWebView
+        private let parent: WebKitWebView
+        private let scripts: [WebViewScript]
            
-        init(_ parent: WebKitWebView) {
+        init(_ parent: WebKitWebView, scripts: [WebViewScript]) {
             self.parent = parent
+            self.scripts = scripts
         }
         
         func cleanupPendingJSDialogs() {
@@ -442,15 +466,68 @@ extension WebKitWebView.Coordinator: WKUIDelegate {
 
 extension WebKitWebView.Coordinator: WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard let webView = message.webView else { return }
+        
+       scripts.first {
+           $0.messageHandlerNames.contains(message.name)
+       }?.handleMessage(message, webView: webView)
+    }
+}
+
+//MARK: - WebViewScript
+protocol WebViewScript {
+    var userScript: WKUserScript { get }
+    var messageHandlerNames: [String] { get }
+    
+    func handleMessage(
+        _ message: WKScriptMessage,
+        webView: WKWebView
+    )
+}
+
+fileprivate struct WindowOpenScript: WebViewScript {
+    private let source = """
+    (function() {
+      if (window.__popupIntercepted__) { return; }
+      window.__popupIntercepted__ = true;
+    
+      const originalOpen = window.open;
+      window.open = function(url, name, specs) {
+        if (window.webkit?.messageHandlers?.windowOpen) {
+          window.webkit.messageHandlers.windowOpen.postMessage({
+            url: url,
+            name: name || null,
+            specs: specs || null
+          });
+          return null;
+        }
+        return originalOpen.apply(window, arguments);
+      };
+    })();
+    """
+    
+    var userScript: WKUserScript {
+        WKUserScript(
+            source: source,
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: false
+        )
+    }
+    
+    var messageHandlerNames: [String] {
+        ["windowOpen"]
+    }
+    
+    func handleMessage(
+        _ message: WKScriptMessage,
+        webView: WKWebView
+    ) {
         guard
-            message.name == "windowOpen",
             let body = message.body as? [String: Any],
             let urlString = body["url"] as? String,
             let url = URL(string: urlString)
         else { return }
-
-        if let webView = message.webView {
-            webView.load(URLRequest(url: url))
-        }
+        
+        webView.load(URLRequest(url: url))
     }
 }
